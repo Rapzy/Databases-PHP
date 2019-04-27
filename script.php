@@ -24,6 +24,10 @@ if(isset($_POST['getDatabases']))
 
 	$sql = "show databases";
 	$databases = $conn->query($sql);
+	if($databases->num_rows > 0)
+		echo "<h2>DATABASES</h2>";
+	else
+		echo "<h2>DATABASES AREN'T CREATED/h2>";
 
 	printHtmlTableHeader(['№','Database','Option']);
 	for ($i=0; $i < $databases->num_rows; $i++) { 
@@ -58,6 +62,10 @@ elseif (isset($_POST['getTable'])) {
 	$sql = "show tables";
 	$tables = $conn->query($sql);
 	$data = json_encode($data);
+	if($tables->num_rows > 0)
+		echo "<h2>TABLES</h2>";
+	else 
+		echo "<h2>TABLES AREN'T CREATED</h2>";
 	printHtmlTableHeader(['№','Table','Option']);
 	for ($i=0; $i < $tables->num_rows; $i++) { 
 		$row = $tables->fetch_array();
@@ -74,6 +82,58 @@ elseif (isset($_POST['getTable'])) {
 					</form>
 				</td>
 			</tr>";
+	}
+	echo '</table><a href="index.php">Home</a>';
+	$conn->close();
+}
+elseif (isset($_POST['openTable'])) {
+	$data = json_decode($_POST['data'], true);
+	$conn = @new mysqli($data['addres'], $data['login'], $data['pass'], $data['dbName']);
+	if ($conn->connect_error) 
+	{
+	    die("Connection failed: " . $conn->connect_error);
+	} 
+	$table = $_POST['tableName'];
+	$sql = "DESCRIBE $table";
+	$columns = $conn->query($sql);
+	$row = $columns->fetch_assoc();
+	printHtmlTableHeader(array_keys($row));
+	$columns->data_seek(0);
+
+	echo "<h2>TABLE STRUCTURE</h2>";
+	for ($i=0; $i < $columns->num_rows; $i++) 
+	{ 
+		$row = $columns->fetch_assoc();
+		echo "<tr>";
+		foreach ($row as $value) 
+		{
+			echo "<td>$value</td>";
+		}
+		echo "</tr>";
+	}
+	echo "</table>";
+
+	$sql = "SELECT * from $table";
+	$result = $conn->query($sql);
+	if($result->num_rows > 0)
+	{
+		$row = $result->fetch_assoc();
+		printHtmlTableHeader(array_keys($row));
+		$result->data_seek(0);
+		echo "<h2>TABLE DATA</h2>";
+	}
+	else
+		echo "<h2>TABLE IS EMTY</h2>";
+
+	for ($i=0; $i < $result->num_rows; $i++) 
+	{ 
+		$row = $result->fetch_assoc();
+		echo "<tr>";
+		foreach ($row as $value) 
+		{
+			echo "<td>$value</td>";
+		}
+		echo "</tr>";
 	}
 	echo '</table><a href="index.php">Home</a>';
 	$conn->close();
