@@ -1,6 +1,7 @@
 body 
 {
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	min-height: 100vh;
@@ -31,5 +32,27 @@ label
 }
 h1
 {
+	text-align: center;
+}
+.openForm
+{
+	margin: 0;
+}
+.openBtn
+{
+	background: none;
+	border: none;
+	outline: none;
+	cursor: pointer;
+}
+.openBtn:hover
+{
+	color:grey;
+}
+table
+{
+	border:1px solid black;
+	border-collapse: collapse;
+	width: 450px;
 	text-align: center;
 }
